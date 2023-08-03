@@ -146,42 +146,18 @@ def extract_answers(request):
 #def show_exam_result(request, course_id, submission_id):
 
 def show_exam_result(request, course_id, submission_id):
-    course  =  get_object_or_404(Course, pk=course_id)
-    submission = get_object_or_404(Submission, pk=submission_id)
-    total =  0
-    total_user =  0
-    q_results = {}
-    c_submits = {}
-    c_results = {}
-    for q in course.question_set.all():
-        q_total = 0
-        q_total_user = 0
-        for c in q.choice_set.all():
-            q_total += 1  
-            temp_right = c.is_correct
-            count =  submission.choices.filter(id = c.id).count()
+    context = {}
+    course = get_object_or_404(Course, pk=course_id)
+    submission = Submission.objects.get(id=submission_id)
+    choices = submission.choices.all()
+    total_score = 0
+    for choice in choices:
+        if choice.is_correct:
+            total_score += choice.question.grade
+    context['course'] = course
+    context['grade'] = total_score
+    context['choices'] = choices
 
-            temp_user  = count > 0 
-            c_submits[c.id] = temp_user
-            c_results[c.id] = temp_user == temp_right
-            if temp_user == temp_right:
-                q_total_user += 1        
-        q_results[q.id] =  q.grade*(q_total_user / q_total)
-        total += q.grade 
-        total_user  += q_results[q.id]
-    context  = {}
-    context["course"]  =  course
-    context["submission"]  =  submission
-    #context["choices"]  =  submission.chocies.all()
-    context["total"]  =  total
-    context["total_user"]  =  total_user
-    context["q_results"]  =  q_results
-    context["c_submits"]  =  c_submits
-    context["c_results"]  =  c_results
-    context["grade"]  =  int((total_user/total)*100)
-    #print(vars(submission.chocies))
-    #user = request.user
-    #return render(request, 'onlinecourse/show_exam_result.html', context)
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
 
 
