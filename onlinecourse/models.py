@@ -105,7 +105,7 @@ class Question(models.Model):
 
     def is_get_score(self,selected_ids):
         all_answers = self.choice_set.filter(is_correct = True).count()
-        selected_correct = self.choice_set.filter(is_correct = True , id__in=selected_ids).count
+        selected_correct = self.choice_set.filter(is_correct = True , id__in=selected_ids).count()
         if all_answers == selected_correct:
             return True
         else:
@@ -117,5 +117,5 @@ class Choice(models.Model):
     is_correct = models.BooleanField(default=False)
 
 class Submission(models.Model):
-    enrollement = models.ForeignKey(Enrollment,on_delete=models.CASCADE)
+    enrollment = models.ForeignKey(Enrollment,on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)

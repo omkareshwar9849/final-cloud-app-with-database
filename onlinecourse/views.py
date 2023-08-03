@@ -113,8 +113,8 @@ def enroll(request, course_id):
 def submit(request,course_id):
     user = request.user
     course = get_object_or_404(Course,pk=course_id)
-    enrollment = Enrollment.objects.get(user=user,course=course)
-    submission = Submission.objects.create(enrollement=enrollement)
+    enrollment = Enrollment.objects.get(user=user, course=course)
+    submission = Submission.objects.create(enrollment=enrollment)
     answers = extract_answers(request)
     submission.choices.set(answers)
     submission.save()
@@ -140,20 +140,21 @@ def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course,pk=course_id)
     submission = get_object_or_404(Submission,pk=submission_id)
     choices = submission.choices.all()
-    total_mark , mark = 0.0
+    total_mark, mark = 0, 0
     for question in course.question_set.all():
         total_mark += question.grade
+        # print(course.question_set.all())
         if question.is_get_score(choices):
             mark += question.grade
 
-        return render(
-            request,
-            'onlinecourse/exam_result_bootstrap.html',
-            {
-                "course":course, "choices":choices, "mark":mark, "total_mark":total_mark,
-                "submission":submission, "grade":int((marks/total_mark)*100)
-            }
-        )
+    return render(
+        request,
+        'onlinecourse/exam_result_bootstrap.html',
+        {
+            "course":course, "choices":choices, "mark":mark, "total_mark":total_mark,
+            "submission":submission, "grade":int((mark/total_mark)*100)
+        }
+    )
 
 
 
