@@ -10,7 +10,7 @@ class QuestionInline(admin.StackedInline):
 
 class ChoiceInline(admin.StackedInline):
     model = Choice
-    extra = 4
+    extra = 5
 
 class LessonInline(admin.StackedInline):
     model = Lesson
